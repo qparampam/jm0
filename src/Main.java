@@ -1,23 +1,27 @@
 import java.util.*;
 
 public class Main {
-    
+
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите грузоподъемность машины:");
-        String title1 = scanner.nextLine();
+        String sCapacityTruck = scanner.nextLine();
         System.out.println("Введите предметы для перевозки:");
-        String title2 = scanner.nextLine();
-        System.out.println("Вывод: " + title1 + " " + title2);
+        String sFurniture = scanner.nextLine();
+        System.out.println("Вывод: " + sCapacityTruck + " " + sFurniture);
+
+        // Разделяем предметы друг от друга
         String delimiter = " ";
-        String[] subStr = title2.split(delimiter);
+        String[] subStr = sFurniture.split(delimiter);
 
-        Truck capacity = new Truck(Integer.parseInt(title1));
+        // Задаем грузовику введенную грузоподъемность
+        Truck capacity = new Truck(Integer.parseInt(sCapacityTruck));
 
-    //    Furniture furniture = new Furniture(name, number);
-
+        // Создаем list со всеми введенными предметами
         List<Furniture> list = new ArrayList<Furniture>();
 
+        // Разделяем свойства предметов и заполняем list
         for (int i = 0; i < subStr.length; ++i) {
             String[] subStr1 = subStr[i].split("/");
             int w1 = 0;
@@ -29,25 +33,24 @@ public class Main {
             }
         }
 
-        // Отсюда в массиве перебираем
-        // ПРОВЕРИТЬ СУММУ, ПРОХОДИТ ПОД < 50
-        // ПРОВЕРЬ ЕЕ СУММУ ДЕНЕГ
-        //
+        // capacityT = грузоподъемность грузовика
+        int capacityT = capacity.getCapacity();
 
-        int K = capacity.getCapacity();
-
-        Furniture opt = new Furniture("null",0,0);
-
+        // Здесь будут храниться все подходящие предметы
         List<Furniture> list1 = new ArrayList<Furniture>();
 
+        // Пустой предмет, нужен для выполнения for each
+        Furniture opt = new Furniture("null",0,0);
         list1.add(opt);
 
+        // Здесь будут храниться временные предметы, пока не определим лучшее сочетание
         List<Furniture> newSums = new ArrayList<Furniture>();
 
+        // Сумма цен
         long sumPrice = 0;
 
 
-        // Перебираем весь ввод
+        // Перебираем все предметы
         for (Furniture input : list) {
 
             // Перебираем лист с результатами (изначально с 1 пустым элементом)
@@ -56,51 +59,39 @@ public class Main {
                 int newSum = sum.getWeight() + input.getWeight();
                 long newSumPrice = sum.getPrice() + input.getPrice();
 
-                System.out.println("newSumPrice " + newSumPrice);
+                // Если значение веса предметов вмещается в грузовик
+                if (newSum <= capacityT) {
 
-                // Если значение веса попадает под диапазон
-                if (newSum <= K) {
-
-                    System.out.println("newSum " + newSum);
-
+                    // Если в памяти еще нет лучших вариантов, заполняем
                     if(newSums.isEmpty()){
                         newSums.add(new Furniture(input.getProduct(),input.getWeight(),input.getPrice()));
                     } else {
-                        // Перебираем
+
+                        // Перебираем лучшие значения
                         for(int i = 0; i < newSums.size(); i++) {
-
                             sumPrice += newSums.get(i).getPrice();
-                            System.out.println("sumPrice " + sumPrice + " i " + i);
 
-                        //    System.out.println("Есть такой тоже");
-
+                            // Если сумма предметов на этой итерации больше, чем сумма предметов в памяти
                             if (newSumPrice > sumPrice){
+                                // Чистим список памяти
                                 newSums.clear();
+                                // Добавляем в него предмет с этой итерации
                                 newSums.add(new Furniture(input.getProduct(),input.getWeight(),input.getPrice()));
+                                // Обнуляем сумму
                                 sumPrice = 0;
                             }
                         }
                     }
                 }
             }
-
             list1.addAll(newSums);
-
         }
 
-    //    System.out.println(opt.getWeight());
-    //    System.out.println("opt! " + opt.getProduct() + " " + opt.getWeight() + " " + opt.getPrice());
-
+        // Смотрим, что получилось
         System.out.println(opt);
         for(int i = 0; i < list1.size(); i++) {
             System.out.println(list1.get(i).getProduct() + " " + list1.get(i).getWeight() + " " + list1.get(i).getPrice());
         }
-    //    System.out.println(K);
     }
 }
-
-
-// Создать класс грузовик, товар
-// Объекты классов поместить в arraylist или подобное
-// Потом циклами проверять, помещается ли объект в грузовик, если да, запоминаем, смотрим следующий
 
